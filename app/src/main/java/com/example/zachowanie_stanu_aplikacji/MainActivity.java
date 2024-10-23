@@ -13,26 +13,29 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * Klasa MainActivity odpowiedzialna za zachowanie stanu aplikacji podczas jej restartu (np. zmiana orientacji ekranu).
+ */
 public class MainActivity extends AppCompatActivity {
-    private  static final  String KEY_COUNT="ilosc_klikniec";
-    private  static final  String STATE_CHECKBOX="sprawdz";
-    private  static final  String STATE_SWITCH="tryb";
-    private  static final  String STATE_INPUT="tekst";
 
-    private  TextView tekst;
+    // Klucze do zapisywania stanu aplikacji
+    private static final String KEY_COUNT = "ilosc_klikniec";
+    private static final String STATE_CHECKBOX = "sprawdz";
+    private static final String STATE_SWITCH = "tryb";
+    private static final String STATE_INPUT = "tekst";
+
+    // Zmienne do przechowywania referencji do widoków i stanów
+    private TextView tekst;
     private EditText name;
-    private  String name_input;
+    private String name_input;
     private Button btn;
     private Button btn2;
     private TextView liczba;
-    private  TextView stan_check;
+    private TextView stan_check;
     private Switch tryb;
     private CheckBox stan;
-    private int ilosc_klikniec=0;
+    private int ilosc_klikniec = 0;
     private boolean stan_checkbox;
     private boolean stan_switch;
     private ConstraintLayout layout;
@@ -40,23 +43,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Aktywacja trybu "edge to edge" (rozciąganie na całą przestrzeń ekranu)
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        btn=findViewById(R.id.button);
-        btn2=findViewById(R.id.button2);
-        liczba=findViewById(R.id.textView);
-        stan_check=findViewById(R.id.textView2);
-        stan=findViewById(R.id.checkBox);
-        tryb=findViewById(R.id.switch1);
-        layout=findViewById(R.id.main);
-        name=findViewById(R.id.editTextText);
-        tekst=findViewById(R.id.tekst_input);
+        // Inicjalizacja referencji do widoków w interfejsie użytkownika
+        btn = findViewById(R.id.button);
+        btn2 = findViewById(R.id.button2);
+        liczba = findViewById(R.id.textView);
+        stan_check = findViewById(R.id.textView2);
+        stan = findViewById(R.id.checkBox);
+        tryb = findViewById(R.id.switch1);
+        layout = findViewById(R.id.main);
+        name = findViewById(R.id.editTextText);
+        tekst = findViewById(R.id.tekst_input);
 
-        if(savedInstanceState!=null){
-            name_input=savedInstanceState.getString(STATE_INPUT);
+        // Przywrócenie stanu dla tekstu wprowadzającego, jeśli został zapisany
+        if (savedInstanceState != null) {
+            name_input = savedInstanceState.getString(STATE_INPUT);
         }
-        updateText();
+        updateText();  // Aktualizacja tekstu wyświetlanego na ekranie
+
+        // Obsługa kliknięcia przycisku "Zatwierdź" (btn2) - zapisuje tekst z EditText
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        if(savedInstanceState!=null){
+        // Przywrócenie stanu dla przełącznika (tryb ciemny/jasny), jeśli został zapisany
+        if (savedInstanceState != null) {
             boolean isSwitchChecked = savedInstanceState.getBoolean(STATE_SWITCH);
             tryb.setChecked(isSwitchChecked);
             if (isSwitchChecked) {
@@ -77,47 +86,52 @@ public class MainActivity extends AppCompatActivity {
                 tryb.setText("tryb jasny");
             }
         }
-        tryb.setOnCheckedChangeListener((buttonView,isChecked)->{
-            if(isChecked){
-                stan_switch=true;
+
+        // Obsługa zmiany stanu przełącznika (trybu jasny/ciemny)
+        tryb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                stan_switch = true;
                 tryb.setText("tryb ciemny");
-                Toast.makeText(MainActivity.this,"zmieniono tryb",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "zmieniono tryb", Toast.LENGTH_SHORT).show();
                 layout.setBackgroundColor(Color.BLACK);
-            }else{
-                stan_switch=false;
+            } else {
+                stan_switch = false;
                 tryb.setText("tryb jasny");
-                Toast.makeText(MainActivity.this,"zmieniono tryb",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "zmieniono tryb", Toast.LENGTH_SHORT).show();
                 layout.setBackgroundColor(Color.WHITE);
             }
         });
+
+        // Zaktualizowanie stanu przełącznika po jego zmianie
         tryb.setChecked(stan_switch);
 
-
-
-        if(savedInstanceState!=null){
+        // Przywrócenie stanu checkboxa, jeśli został zapisany
+        if (savedInstanceState != null) {
             boolean isCheckChecked = savedInstanceState.getBoolean(STATE_CHECKBOX);
             stan.setChecked(isCheckChecked);
         }
-        stan.setOnCheckedChangeListener((buttonView,isChecked)->{
-        if (isChecked) {
-            stan_checkbox=true;
-            stan_check.setText("check box zaznaczony");
 
-        }else{
-            stan_checkbox=false;
-            stan_check.setText("check box odzaznaczony");
-
-        }
+        // Obsługa zmiany stanu checkboxa
+        stan.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                stan_checkbox = true;
+                stan_check.setText("check box zaznaczony");
+            } else {
+                stan_checkbox = false;
+                stan_check.setText("check box odzaznaczony");
+            }
         });
+
+        // Zaktualizowanie stanu checkboxa po jego zmianie
         stan.setChecked(stan_checkbox);
 
-
-
-        if(savedInstanceState!=null){
-            ilosc_klikniec=savedInstanceState.getInt(KEY_COUNT);
+        // Przywrócenie liczby kliknięć, jeśli stan został zapisany
+        if (savedInstanceState != null) {
+            ilosc_klikniec = savedInstanceState.getInt(KEY_COUNT);
         }
-        updateCountText();
+        updateCountText();  // Aktualizacja liczby kliknięć
 
+        // Obsługa kliknięcia przycisku "Kliknij mnie" (btn) - zwiększa licznik kliknięć
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,36 +139,43 @@ public class MainActivity extends AppCompatActivity {
                 updateCountText();
             }
         });
-        }
-        @Override
-        protected  void onSaveInstanceState(Bundle outState){
-            super.onSaveInstanceState(outState);
-            outState.putInt(KEY_COUNT,ilosc_klikniec);
-            outState.putBoolean(STATE_CHECKBOX,stan_checkbox);
-            outState.putBoolean(STATE_SWITCH,stan_switch);
-            outState.putString(STATE_INPUT,name_input);
-        }
-        private  void updateText(){
-            tekst.setText(name_input);
-        }
-        private  void  updateCountText(){
+    }
 
-        liczba.setText("liczba:"+ilosc_klikniec);
+    // Zapisanie stanu aplikacji (liczba kliknięć, stan checkboxa, stan przełącznika, tekst wprowadzony przez użytkownika)
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_COUNT, ilosc_klikniec);
+        outState.putBoolean(STATE_CHECKBOX, stan_checkbox);
+        outState.putBoolean(STATE_SWITCH, stan_switch);
+        outState.putString(STATE_INPUT, name_input);
+    }
 
-        }
-        private void updateCheckState(){
-            if(stan_checkbox==true) {
-                stan_check.setText("check box zaznaczony");
-            }else{
-                stan_check.setText("check box odzaznaczony");
-            }
-        }
-        private void updateSwitchState(){
-            if(stan_switch==true) {
-                tryb.setText("tryb ciemny");
-            }else{
-                stan.setText("tryb jasny");
-            }
-        }
+    // Aktualizacja wyświetlanego tekstu
+    private void updateText() {
+        tekst.setText(name_input);
+    }
 
+    // Aktualizacja licznika kliknięć
+    private void updateCountText() {
+        liczba.setText("liczba: " + ilosc_klikniec);
+    }
+
+    // Aktualizacja stanu checkboxa (metoda pomocnicza, choć nie jest używana w kodzie)
+    private void updateCheckState() {
+        if (stan_checkbox) {
+            stan_check.setText("check box zaznaczony");
+        } else {
+            stan_check.setText("check box odzaznaczony");
+        }
+    }
+
+    // Aktualizacja stanu przełącznika (metoda pomocnicza, choć nie jest używana w kodzie)
+    private void updateSwitchState() {
+        if (stan_switch) {
+            tryb.setText("tryb ciemny");
+        } else {
+            stan.setText("tryb jasny");
+        }
+    }
 }
